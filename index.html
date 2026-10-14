@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Promises</title>
+<style>
+  :root { color-scheme: dark; }
+  html,body{height:100%;margin:0;background:#120e0b;color:#f3ebda;
+    font:16px/1.5 ui-serif,Georgia,serif;display:grid;place-items:center}
+  .box{max-width:34rem;padding:2rem;text-align:center}
+  .emoji{font-size:3rem;line-height:1}
+  a{color:#ffd9a0}
+  .muted{opacity:.6;font-size:.9rem;margin-top:1.25rem}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="emoji" id="ico">🥚</div>
+  <h1 id="hd">Abriendo…</h1>
+  <p id="msg" class="muted">Un momento.</p>
+</div>
+<script>
+(async () => {
+  const hd  = document.getElementById('hd');
+  const msg = document.getElementById('msg');
+  const ico = document.getElementById('ico');
+
+  // Keep any #fragment (the game's sync key lives there and must survive).
+  const frag = location.hash || '';
+  const bust = '?t=' + Date.now();          // defeat any cache of link.txt
+
+  let url = '';
+  try {
+    const r = await fetch('link.txt' + bust, { cache: 'no-store' });
+    if (r.ok) url = (await r.text()).trim();
+  } catch (e) { /* offline or missing */ }
+
+  if (!url || !/^https?:\/\//.test(url)) {
+    ico.textContent = '🐔';
+    hd.textContent  = 'El nido está descansando';
+    msg.innerHTML   = 'El enlace no está disponible ahora mismo. ' +
+                      'Prueba otra vez en unos minutos.';
+    return;
+  }
+
+  // Forward, preserving the fragment.
+  location.replace(url + frag);
+})();
+</script>
+</body>
+</html>
